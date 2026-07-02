@@ -3,6 +3,7 @@ package br.com.ifba.gestaofinanceira.CartaoCredito.Service;
 import br.com.ifba.gestaofinanceira.CartaoCredito.Dto.CartaoPostDto;
 import br.com.ifba.gestaofinanceira.CartaoCredito.Entity.Cartao;
 import br.com.ifba.gestaofinanceira.CartaoCredito.Repository.CartaoRepository;
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import br.com.ifba.gestaofinanceira.Usuario.Entity.Usuario;
 import br.com.ifba.gestaofinanceira.Usuario.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -25,7 +26,7 @@ public class CartaoService implements CartaoIService {
     public Cartao cadastrarCartao(CartaoPostDto dto) {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         Cartao cartao = new Cartao();
         cartao.setNome(dto.getNome());

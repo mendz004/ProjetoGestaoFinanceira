@@ -3,6 +3,7 @@ package br.com.ifba.gestaofinanceira.Conta.Service;
 import br.com.ifba.gestaofinanceira.Conta.Dto.ContaPostDto;
 import br.com.ifba.gestaofinanceira.Conta.Entity.Conta;
 import br.com.ifba.gestaofinanceira.Conta.Repository.ContaRepository;
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import br.com.ifba.gestaofinanceira.Usuario.Entity.Usuario;
 import br.com.ifba.gestaofinanceira.Usuario.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -25,7 +26,7 @@ public class ContaService implements ContaIService{
     public Conta cadastrarConta(ContaPostDto dto) {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         Conta conta = new Conta();
         conta.setNomeConta(dto.getNomeConta());

@@ -7,6 +7,7 @@ import br.com.ifba.gestaofinanceira.Conta.Repository.ContaRepository;
 import br.com.ifba.gestaofinanceira.Despesa.Dto.DespesaPostDto;
 import br.com.ifba.gestaofinanceira.Despesa.Entity.Despesa;
 import br.com.ifba.gestaofinanceira.Despesa.Repository.DespesaRepository;
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class DespesaService implements DespesaIService{
         if (dto.getContaId() != null) {
 
             Conta conta = contaRepository.findById(dto.getContaId())
-                    .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                    .orElseThrow(() -> new BusinessException("Conta não encontrada"));
 
             despesa.setConta(conta);
 
@@ -52,10 +53,10 @@ public class DespesaService implements DespesaIService{
         } else if (dto.getCartaoId() != null) {
 
             Cartao cartao = cartaoRepository.findById(dto.getCartaoId())
-                    .orElseThrow(() -> new RuntimeException("Cartão não encontrado"));
+                    .orElseThrow(() -> new BusinessException("Cartão não encontrado"));
 
             if (cartao.getLimiteDisponivel() < dto.getValor()) {
-                throw new RuntimeException("Limite insuficiente.");
+                throw new BusinessException("Limite insuficiente.");
             }
 
             cartao.setLimiteDisponivel(cartao.getLimiteDisponivel() - dto.getValor());
@@ -64,7 +65,7 @@ public class DespesaService implements DespesaIService{
             despesa.setCartao(cartao);
 
         } else {
-            throw new RuntimeException("Informe uma conta ou um cartão.");
+            throw new BusinessException("Informe uma conta ou um cartão.");
         }
 
         return despesaRepository.save(despesa);
@@ -78,7 +79,7 @@ public class DespesaService implements DespesaIService{
     @Override
     public Despesa buscarPorId(Long id) {
         return despesaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Despesa não encontrada."));
+                .orElseThrow(() -> new BusinessException("Despesa não encontrada."));
     }
 
     @Transactional

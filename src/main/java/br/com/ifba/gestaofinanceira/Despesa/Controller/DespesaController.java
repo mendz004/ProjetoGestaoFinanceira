@@ -8,6 +8,7 @@ import br.com.ifba.gestaofinanceira.Despesa.Dto.DespesaPostDto;
 import br.com.ifba.gestaofinanceira.Despesa.Entity.Despesa;
 import br.com.ifba.gestaofinanceira.Despesa.Service.DespesaService;
 import br.com.ifba.gestaofinanceira.Infraestructure.Mapper.ObjectMapperUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class DespesaController {
 
 
     @PostMapping("/registrar")
-    public ResponseEntity<DespesaGetDto> registrarDespesa(@RequestBody DespesaPostDto despesaPostDto) {
+    public ResponseEntity<DespesaGetDto> registrarDespesa(@RequestBody @Valid DespesaPostDto despesaPostDto) {
 
         Despesa despesa = despesaService.registrarDespesa(despesaPostDto);
 
@@ -53,12 +54,10 @@ public class DespesaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> excluirDespesa(@PathVariable Long id) {
-        try {
-            despesaService.excluirDespesa(id);
-            return ResponseEntity.ok("Despesa excluída e saldo atualizado com sucesso.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+
+        despesaService.excluirDespesa(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

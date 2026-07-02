@@ -1,6 +1,7 @@
 package br.com.ifba.gestaofinanceira.Usuario.Service;
 
 import br.com.ifba.gestaofinanceira.Conta.Entity.Conta;
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import br.com.ifba.gestaofinanceira.Usuario.Entity.Usuario;
 import br.com.ifba.gestaofinanceira.Usuario.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -35,13 +36,13 @@ public class UsuarioService implements UsuarioIService {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
         if (usuarioOpt.isEmpty()) {
-            throw new RuntimeException("E-mail não cadastrado.");
+            throw new BusinessException("E-mail não cadastrado.");
         }
 
         Usuario usuario = usuarioOpt.get();
 
         if (!usuario.getSenha().equals(senha)) {
-            throw new RuntimeException("Senha incorreta.");
+            throw new BusinessException("Senha incorreta.");
         }
 
         return usuario;
@@ -53,7 +54,7 @@ public class UsuarioService implements UsuarioIService {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
         if (usuarioOpt.isEmpty()) {
-            throw new RuntimeException("E-mail não encontrado no sistema.");
+            throw new BusinessException("E-mail não encontrado no sistema.");
         }
 
         Usuario usuario = usuarioOpt.get();

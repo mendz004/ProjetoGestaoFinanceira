@@ -10,7 +10,6 @@ import lombok.Data;
 public class UsuarioPostDto {
 
 
-
     @JsonProperty(value = "nome")
     @NotNull(message = "Nome de usuário deve ser obrigatório!")
     private String nome;
