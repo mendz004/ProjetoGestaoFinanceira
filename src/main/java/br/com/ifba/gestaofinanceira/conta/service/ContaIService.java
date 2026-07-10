@@ -9,6 +9,6 @@ public interface ContaIService {
 
      Conta cadastrarConta(ContaPostDto dto);
 
-    List<Conta> listarTodas();
+    List<Conta> findAll();
 
 }

@@ -37,7 +37,7 @@ public class ContaService implements ContaIService{
         return contaRepository.save(conta);
     }
 
-    public List<Conta> listarTodas() {
+    public List<Conta> findAll() {
         return contaRepository.findAll();
     }
 

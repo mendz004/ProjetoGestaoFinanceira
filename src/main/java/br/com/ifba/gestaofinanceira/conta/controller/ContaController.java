@@ -34,9 +34,9 @@ public class ContaController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<ContaGetDto>> listar() {
+    public ResponseEntity<List<ContaGetDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(objectMapperUtil.mapAll
-                (this.contaService.listarTodas(),
+                (this.contaService.findAll(),
                         ContaGetDto.class));
     }
 

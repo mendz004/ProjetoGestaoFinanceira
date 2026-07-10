@@ -1,10 +1,14 @@
 package br.com.ifba.gestaofinanceira.conta.entity;
 
 import br.com.ifba.gestaofinanceira.Infraestructure.entity.PersistenceEntity;
+import br.com.ifba.gestaofinanceira.relatorio.entity.RelatorioMensal;
+import br.com.ifba.gestaofinanceira.transacao.entity.Transacao;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "conta")
@@ -24,5 +28,11 @@ public class Conta extends PersistenceEntity {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
+    private List<Transacao> transacoes;
+
+    @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
+    private List<RelatorioMensal> relatorio;
 
 }

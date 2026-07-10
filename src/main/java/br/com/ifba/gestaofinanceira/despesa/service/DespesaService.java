@@ -35,8 +35,6 @@ public class DespesaService implements DespesaIService{
         despesa.setValor(dto.getValor());
         despesa.setData(dto.getData());
         despesa.setDescricao(dto.getDescricao());
-        despesa.setEfetivada(dto.getEfetivada());
-        despesa.setFormaPagamento(dto.getFormaPagamento());
 
         if (dto.getContaId() != null) {
 
