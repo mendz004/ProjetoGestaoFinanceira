@@ -1,5 +1,6 @@
 package br.com.ifba.gestaofinanceira.despesa.dto;
 
+import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -32,5 +33,8 @@ public class DespesaPostDto {
 
     @JsonProperty(value = "cartaoId")
     private Long cartaoId;
+
+    @JsonProperty("categoria")
+    private CategoriaDespesa categoria;
 
 }

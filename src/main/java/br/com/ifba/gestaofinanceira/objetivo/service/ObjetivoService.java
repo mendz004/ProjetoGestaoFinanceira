@@ -1,0 +1,69 @@
+package br.com.ifba.gestaofinanceira.objetivo.service;
+
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
+import br.com.ifba.gestaofinanceira.objetivo.dto.ObjetivoPostDto;
+import br.com.ifba.gestaofinanceira.objetivo.emum.StatusObjetivo;
+import br.com.ifba.gestaofinanceira.objetivo.entity.ObjetivoFinanceiro;
+import br.com.ifba.gestaofinanceira.objetivo.repository.ObjetivoRepository;
+import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
+import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ObjetivoService implements ObjetivoIService {
+
+    @Autowired
+    private ObjetivoRepository objetivoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Transactional
+    @Override
+    public ObjetivoFinanceiro cadastrarObjetivo(ObjetivoPostDto dto) {
+        if (dto.getValorAlvo() <= 0) {
+            throw new BusinessException("O valor alvo deve ser maior que zero.");
+        }
+
+        // Busca o usuário no banco de dados
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
+        ObjetivoFinanceiro objetivo = new ObjetivoFinanceiro();
+
+        objetivo.setValorAtual(0.0);
+        objetivo.setStatus(StatusObjetivo.EM_ANDAMENTO);
+
+        return objetivoRepository.save(objetivo);
+    }
+
+    @Override
+    public List<ObjetivoFinanceiro> findAll() {
+        return objetivoRepository.findAll();
+    }
+
+    @Transactional
+    @Override
+    public ObjetivoFinanceiro depositar(Long id, Double valorDepositado) {
+        if (valorDepositado <= 0) {
+            throw new BusinessException("O valor do depósito deve ser maior que zero.");
+        }
+
+        ObjetivoFinanceiro objetivo = objetivoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Objetivo não encontrado."));
+
+        // Adiciona o dinheiro no objetivo
+        objetivo.setValorAtual(objetivo.getValorAtual() + valorDepositado);
+
+        // Verifica se a meta foi alcançada ou ultrapassada
+        if (objetivo.getValorAtual() >= objetivo.getValorAlvo()) {
+            objetivo.setStatus(StatusObjetivo.CONCLUIDO);
+        }
+
+        return objetivoRepository.save(objetivo);
+    }
+
+}

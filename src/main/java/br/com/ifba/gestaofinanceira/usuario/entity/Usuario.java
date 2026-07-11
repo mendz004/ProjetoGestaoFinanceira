@@ -24,6 +24,9 @@ public class Usuario extends PersistenceEntity {
     @Column(name = "senha", nullable = false)
     private String senha;
 
+    @Column(name = "renda_mensal")
+    private Double rendaMensal = 0.0;
+
     // Um usuário tem várias contas (Composição/Agregação)
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnore

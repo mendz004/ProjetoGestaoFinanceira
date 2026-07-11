@@ -8,6 +8,7 @@ import br.com.ifba.gestaofinanceira.despesa.dto.DespesaPostDto;
 import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
 import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
 import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
+import br.com.ifba.gestaofinanceira.orcamento.service.OrcamentoIService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class DespesaService implements DespesaIService{
+public class DespesaService implements DespesaIService {
 
     @Autowired
     private DespesaRepository despesaRepository;
@@ -25,6 +26,9 @@ public class DespesaService implements DespesaIService{
 
     @Autowired
     private CartaoRepository cartaoRepository;
+
+    @Autowired
+    private OrcamentoIService orcamentoService;
 
     @Transactional
     @Override
@@ -65,6 +69,19 @@ public class DespesaService implements DespesaIService{
         } else {
             throw new BusinessException("Informe uma conta ou um cartão.");
         }
+        Conta conta = new Conta();
+        Integer mesDespesa = despesa.getData().getMonthValue();
+        Integer anoDespesa = despesa.getData().getYear();
+        Long usuarioId = conta.getUsuario().getId();
+
+        // Avisa o Orçamento que o usuário gastou dinheiro
+        orcamentoService.atualizarGasto(
+                usuarioId,
+                mesDespesa,
+                anoDespesa,
+                despesa.getCategoria(),
+                despesa.getValor()
+        );
 
         return despesaRepository.save(despesa);
     }

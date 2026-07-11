@@ -2,6 +2,7 @@ package br.com.ifba.gestaofinanceira.despesa.entity;
 
 import br.com.ifba.gestaofinanceira.cartaoCredito.entity.Cartao;
 import br.com.ifba.gestaofinanceira.conta.entity.Conta;
+import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
 import br.com.ifba.gestaofinanceira.transacao.entity.Transacao;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,5 +27,9 @@ public class Despesa extends Transacao {
     @ManyToOne
     @JoinColumn(name = "contaId")
     private Conta conta;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "categoria", nullable = false)
+    private CategoriaDespesa categoria;
 
 }

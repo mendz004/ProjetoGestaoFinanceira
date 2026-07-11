@@ -19,6 +19,10 @@ public class UsuarioPostDto {
     @Email(message = "Insira um E-mail válido!")
     private String email;
 
+    @JsonProperty(value = "rendaMensal")
+    @NotNull(message = "Erro, é obrgatório informar sua renda mensal!")
+    private Double rendaMensal;
+
     @JsonProperty(value = "senha")
     @NotNull(message = "Senha deve ser obrigatório!")
     @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres!")

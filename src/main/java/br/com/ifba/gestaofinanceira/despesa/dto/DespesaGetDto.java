@@ -1,5 +1,6 @@
 package br.com.ifba.gestaofinanceira.despesa.dto;
 
+import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -19,5 +20,8 @@ public class DespesaGetDto {
 
     @JsonProperty(value = "formaPagamento")
     private String formaPagamento;
+
+    @JsonProperty("categoria")
+    private CategoriaDespesa categoria;
 
 }
