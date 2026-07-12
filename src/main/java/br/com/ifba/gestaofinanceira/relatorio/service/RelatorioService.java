@@ -1,67 +1,78 @@
 package br.com.ifba.gestaofinanceira.relatorio.service;
 
-import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
-import br.com.ifba.gestaofinanceira.conta.entity.Conta;
-import br.com.ifba.gestaofinanceira.conta.repository.ContaRepository;
 import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
+import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
 import br.com.ifba.gestaofinanceira.receita.entity.Receita;
-import br.com.ifba.gestaofinanceira.relatorio.dto.RelatorioPostDto;
+import br.com.ifba.gestaofinanceira.receita.repository.ReceitaRepository;
+import br.com.ifba.gestaofinanceira.relatorio.dto.ExtratoItemDto;
+import br.com.ifba.gestaofinanceira.relatorio.dto.RelatorioMensalDto;
 import br.com.ifba.gestaofinanceira.relatorio.entity.RelatorioMensal;
 import br.com.ifba.gestaofinanceira.relatorio.repository.RelatorioRepository;
-import br.com.ifba.gestaofinanceira.transacao.entity.Transacao;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class RelatorioService implements RelatorioIService {
 
     @Autowired
-    private RelatorioRepository relatorioRepository;
+    private DespesaRepository despesaRepository;
 
     @Autowired
-    private ContaRepository contaRepository;
+    private ReceitaRepository receitaRepository;
+
+    @Autowired
+    private RelatorioRepository relatorioRepository;
 
     @Transactional
     @Override
-    public RelatorioMensal gerarRelatorio(RelatorioPostDto dto) {
-        //  Busca a conta (que já vem com as transações embutidas)
-        Conta conta = contaRepository.findById(dto.getContaId())
-                .orElseThrow(() -> new BusinessException("Conta não encontrada."));
+    public RelatorioMensalDto gerarRelatorioMensal(Long contaId, Integer mes, Integer ano) {
 
-        double somaReceitas = 0.0;
-        double somaDespesas = 0.0;
+        //  Define o primeiro e o último dia do mês para a busca no banco
+        YearMonth anoMes = YearMonth.of(ano, mes);
+        LocalDateTime dataInicio = anoMes.atDay(1).atStartOfDay(); // Ex: 01/07/2026 00:00:00
+        LocalDateTime dataFim = anoMes.atEndOfMonth().atTime(23, 59, 59); // Ex: 31/07/2026 23:59:59
 
-        // Analisa os dados de transação
-        if (conta.getTransacoes() != null) {
-            for (Transacao t : conta.getTransacoes()) {
+        //  Busca Despesas e Receitas daquela conta naquele período
+        List<Despesa> despesas = despesaRepository.findByContaIdAndDataBetween(contaId, dataInicio, dataFim);
+        List<Receita> receitas = receitaRepository.findByContaIdAndDataBetween(contaId, dataInicio, dataFim);
 
-                // Primeiro verifica se a data NÃO é nula!
-                if (t.getData() != null && t.getData().getMonthValue() == dto.getMes() && t.getData().getYear() == dto.getAno()) {
+        List<ExtratoItemDto> itensExtrato = new ArrayList<>();
+        double totalDespesas = 0.0;
+        double totalReceitas = 0.0;
 
-                    // Separa as instâncias usando herança e faz as somas
-                    if (t instanceof Receita) {
-                        somaReceitas += t.getValor();
-                    } else if (t instanceof Despesa) {
-                        somaDespesas += t.getValor();
-                    }
-                }
-            }
+        for (Despesa d : despesas) {
+            itensExtrato.add(new ExtratoItemDto(
+                    d.getData(), d.getValor(), d.getDescricao(), d.getCategoria().name(), "DESPESA"
+            ));
+            totalDespesas += d.getValor();
         }
 
-        //  Monta o relatório e salva
-        RelatorioMensal relatorio = new RelatorioMensal();
-        relatorio.setMes(dto.getMes());
-        relatorio.setAno(dto.getAno());
-        relatorio.setConta(conta);
-        relatorio.setTotalReceitas(somaReceitas);
-        relatorio.setTotalDespesas(somaDespesas);
-        relatorio.setSaldoMensal(somaReceitas - somaDespesas);
+        for (Receita r : receitas) {
+            itensExtrato.add(new ExtratoItemDto(
+                    r.getData(), r.getValor(), r.getDescricao(), r.getOrigem().name(), "RECEITA"
+            ));
+            totalReceitas += r.getValor();
+        }
 
-        return relatorioRepository.save(relatorio);
+        itensExtrato.sort(Comparator.comparing(ExtratoItemDto::getData).reversed());
+
+        //  Monta o relatório final e devolve
+        RelatorioMensalDto relatorio = new RelatorioMensalDto();
+        relatorio.setTotalDespesas(totalDespesas);
+        relatorio.setTotalReceitas(totalReceitas);
+        relatorio.setSaldoPeriodo(totalReceitas - totalDespesas);
+        relatorio.setTransacoes(itensExtrato);
+
+        return relatorio;
     }
+
 
     @Override
     public List<RelatorioMensal> findAll() {

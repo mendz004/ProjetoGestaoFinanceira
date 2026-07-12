@@ -39,6 +39,10 @@ public class DespesaService implements DespesaIService {
         despesa.setValor(dto.getValor());
         despesa.setData(dto.getData());
         despesa.setDescricao(dto.getDescricao());
+        despesa.setCategoria(dto.getCategoria());
+        despesa.setFormaPagamento(dto.getFormaPagamento());
+
+        Long usuarioId = null;
 
         if (dto.getContaId() != null) {
 
@@ -46,6 +50,8 @@ public class DespesaService implements DespesaIService {
                     .orElseThrow(() -> new BusinessException("Conta não encontrada"));
 
             despesa.setConta(conta);
+
+            usuarioId = conta.getUsuario().getId();
 
             if (Boolean.TRUE.equals(dto.getEfetivada())) {
                 conta.setSaldoAtual(conta.getSaldoAtual() - dto.getValor());
@@ -66,22 +72,20 @@ public class DespesaService implements DespesaIService {
 
             despesa.setCartao(cartao);
 
+
+            usuarioId = cartao.getUsuario().getId();
+
         } else {
             throw new BusinessException("Informe uma conta ou um cartão.");
         }
-        Conta conta = new Conta();
-        Integer mesDespesa = despesa.getData().getMonthValue();
-        Integer anoDespesa = despesa.getData().getYear();
-        Long usuarioId = conta.getUsuario().getId();
 
         // Avisa o Orçamento que o usuário gastou dinheiro
-        orcamentoService.atualizarGasto(
-                usuarioId,
-                mesDespesa,
-                anoDespesa,
-                despesa.getCategoria(),
-                despesa.getValor()
-        );
+        Integer mesDespesa = despesa.getData().getMonthValue();
+        Integer anoDespesa = despesa.getData().getYear();
+
+        orcamentoService.atualizarGasto( usuarioId, mesDespesa, anoDespesa,
+                despesa.getCategoria(), despesa.getValor());
+
 
         return despesaRepository.save(despesa);
     }

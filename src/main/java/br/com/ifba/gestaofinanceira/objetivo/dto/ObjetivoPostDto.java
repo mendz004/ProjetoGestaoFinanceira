@@ -1,5 +1,6 @@
 package br.com.ifba.gestaofinanceira.objetivo.dto;
 
+import br.com.ifba.gestaofinanceira.objetivo.emum.StatusObjetivo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,6 +17,12 @@ public class ObjetivoPostDto {
     @JsonProperty(value = "valorAlvo")
     @NotNull(message = "Por favor. insira um valor alvo para o seu objetivo!")
     private Double valorAlvo;
+
+    @JsonProperty(value = "valorAtual")
+    private Double valorAtual;
+
+    @JsonProperty(value = "status")
+    private StatusObjetivo status;
 
     @JsonProperty(value = "dataLimite")
     @NotNull(message = "Defina uma data limite para conseguir o seu objetivo!")

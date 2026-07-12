@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class DespesaPostDto {
@@ -16,7 +16,7 @@ public class DespesaPostDto {
 
     @JsonProperty(value = "data")
     @NotNull(message = "data deve ser obrigatoria")
-    private LocalDate data;
+    private LocalDateTime data;
 
     @JsonProperty(value = "descricao")
     @NotNull(message = "Erro, por favor insira a causa da despesa")

@@ -16,6 +16,9 @@ public class OrcamentoGetDto {
     @JsonProperty(value = "valorLimite")
     private Double valorLimite;
 
+    @JsonProperty(value = "valorAtual")
+    private Double valorAtual;
+
     @JsonProperty(value = "categoria")
     private CategoriaDespesa categoria;
 

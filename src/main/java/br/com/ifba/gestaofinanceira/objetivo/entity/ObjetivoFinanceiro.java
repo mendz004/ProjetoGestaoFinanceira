@@ -24,14 +24,14 @@ public class ObjetivoFinanceiro extends PersistenceEntity {
     private Double valorAlvo; // Quanto precisa alcançar
 
     @Column(name = "valor_atual", nullable = false)
-    private Double valorAtual = 0.0; // Começa sempre zerado
+    private Double valorAtual; // Começa sempre zerado
 
     @Column(name = "data_limite")
     private LocalDate dataLimite; // Prazo para atingir o objetivo
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
-    private StatusObjetivo status = StatusObjetivo.EM_ANDAMENTO;
+    private StatusObjetivo status;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

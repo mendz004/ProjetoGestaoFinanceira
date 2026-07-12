@@ -32,10 +32,16 @@ public class ObjetivoService implements ObjetivoIService {
         // Busca o usuário no banco de dados
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
+
         ObjetivoFinanceiro objetivo = new ObjetivoFinanceiro();
 
-        objetivo.setValorAtual(0.0);
-        objetivo.setStatus(StatusObjetivo.EM_ANDAMENTO);
+        objetivo.setNome(dto.getNome());
+        objetivo.setValorAlvo(dto.getValorAlvo());
+        objetivo.setValorAtual(dto.getValorAtual());
+        objetivo.setStatus(dto.getStatus());
+        objetivo.setDataLimite(dto.getDataLimite());
+        objetivo.setUsuario(usuario);
+
 
         return objetivoRepository.save(objetivo);
     }

@@ -14,6 +14,9 @@ public class OrcamentoPostDto {
     @JsonProperty(value = "ano")
     private Integer ano;
 
+    @JsonProperty(value = "valorAtual")
+    private Double valorAtual;
+
     @JsonProperty(value = "valorLimite")
     @NotNull(message = "Por favor, insira um valor limite para gasto!")
     private Double valorLimite;

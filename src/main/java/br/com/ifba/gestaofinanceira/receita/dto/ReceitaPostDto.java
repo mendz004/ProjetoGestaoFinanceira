@@ -1,10 +1,11 @@
 package br.com.ifba.gestaofinanceira.receita.dto;
 
+import br.com.ifba.gestaofinanceira.receita.enun.CategoriaReceita;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class ReceitaPostDto {
@@ -15,7 +16,7 @@ public class ReceitaPostDto {
 
     @JsonProperty(value = "data")
     @NotNull(message = "Data deve ser obrigatório!")
-    private LocalDate data;
+    private LocalDateTime data;
 
     @JsonProperty(value = "descricao")
     @NotNull(message = "Descrição deve ser obrigatório!")
@@ -25,6 +26,5 @@ public class ReceitaPostDto {
     private Long contaId;
 
     @JsonProperty(value = "origem")
-    @NotNull(message = "Origem da receita deve ser obrigatório!")
-    private String origem;
+    private CategoriaReceita origem;
 }

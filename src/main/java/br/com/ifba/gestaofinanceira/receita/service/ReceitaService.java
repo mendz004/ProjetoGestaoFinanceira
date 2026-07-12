@@ -28,14 +28,17 @@ public class ReceitaService implements ReceitaIService{
         Conta conta = contaRepository.findById(dto.getContaId())
                 .orElseThrow(() -> new BusinessException("Conta não encontrada."));
 
+        Double saldoAtual = conta.getSaldoAtual() != null ? conta.getSaldoAtual() : 0.0;
+        conta.setSaldoAtual(saldoAtual + dto.getValor());
+        contaRepository.save(conta); // Salva a conta com o novo saldo
+
         Receita receita = new Receita();
-        receita.setOrigem(dto.getOrigem());
         receita.setValor(dto.getValor());
         receita.setData(dto.getData());
         receita.setDescricao(dto.getDescricao());
+        receita.setOrigem(dto.getOrigem());
         receita.setConta(conta);
 
-        //  Salva no banco de dados
         return receitaRepository.save(receita);
     }
 

@@ -45,8 +45,14 @@ public class OrcamentoService implements OrcamentoIService {
         }
 
         Orcamento orcamento = new Orcamento();
-        orcamento.setUsuario(usuario);
+
+        orcamento.setMes(dto.getMes());
+        orcamento.setAno(dto.getAno());
+        orcamento.setCategoria(dto.getCategoria());
+        orcamento.setValorLimite(dto.getValorLimite());
+
         orcamento.setValorGasto(0.0);
+        orcamento.setUsuario(usuario);
 
         return orcamentoRepository.save(orcamento);
     }
@@ -64,6 +70,10 @@ public class OrcamentoService implements OrcamentoIService {
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
 
         Double rendaMensal = usuario.getRendaMensal();
+
+        if (rendaMensal == null) {
+            throw new BusinessException("O usuário não possui renda mensal cadastrada.");
+        }
 
         Map<CategoriaDespesa, Double> sugestoes = new EnumMap<>(CategoriaDespesa.class);
 

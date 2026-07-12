@@ -1,5 +1,6 @@
 package br.com.ifba.gestaofinanceira.receita.dto;
 
+import br.com.ifba.gestaofinanceira.receita.enun.CategoriaReceita;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -14,7 +15,6 @@ public class ReceitaGetDto {
     @JsonProperty(value = "descricao")
     private String descricao;
 
-
     @JsonProperty(value = "origem")
-    private String origem;
+    private CategoriaReceita origem;
 }
