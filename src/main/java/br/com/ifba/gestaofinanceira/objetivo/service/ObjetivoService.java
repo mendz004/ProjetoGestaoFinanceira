@@ -72,4 +72,30 @@ public class ObjetivoService implements ObjetivoIService {
         return objetivoRepository.save(objetivo);
     }
 
+    @Transactional
+    @Override
+    public ObjetivoFinanceiro atualizar(Long id, ObjetivoFinanceiro objetivoAtualizado) {
+
+        ObjetivoFinanceiro objetivoExistente = objetivoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Objetivo não encontrado com o ID: " + id));
+
+        // Atualiza os dados da meta
+        objetivoExistente.setNome(objetivoAtualizado.getNome());
+        objetivoExistente.setValorAlvo(objetivoAtualizado.getValorAlvo());
+        objetivoExistente.setValorAtual(objetivoAtualizado.getValorAtual());
+        objetivoExistente.setDataLimite(objetivoAtualizado.getDataLimite());
+        objetivoExistente.setStatus(objetivoAtualizado.getStatus());
+
+        return objetivoRepository.save(objetivoExistente);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+
+        ObjetivoFinanceiro objetivo = objetivoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Objetivo não encontrado."));
+
+        objetivoRepository.delete(objetivo);
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.ifba.gestaofinanceira.cartaoCredito.entity;
 
+import br.com.ifba.gestaofinanceira.cartaoCredito.enun.StatusFatura;
 import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
 import br.com.ifba.gestaofinanceira.Infraestructure.entity.PersistenceEntity;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
@@ -23,6 +24,9 @@ public class Cartao extends PersistenceEntity {
     private Double limiteTotal;
 
     private Double limiteDisponivel;
+
+    private StatusFatura statusFatura;
+
 
     @Column(name = "diaFechamento", nullable = false)
     private Date diaFechamento;

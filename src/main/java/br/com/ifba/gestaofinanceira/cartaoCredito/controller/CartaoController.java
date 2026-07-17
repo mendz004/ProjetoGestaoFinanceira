@@ -5,6 +5,7 @@ import br.com.ifba.gestaofinanceira.cartaoCredito.dto.CartaoPostDto;
 import br.com.ifba.gestaofinanceira.cartaoCredito.entity.Cartao;
 import br.com.ifba.gestaofinanceira.cartaoCredito.service.CartaoService;
 import br.com.ifba.gestaofinanceira.Infraestructure.mapper.ObjectMapperUtil;
+import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,5 +47,12 @@ public class CartaoController {
         cartaoService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Cartao> atualizar(@PathVariable Long id, @RequestBody Cartao cartao) {
+
+        Cartao atualizarCartao = cartaoService.atualizar(id, cartao);
+        return ResponseEntity.ok(atualizarCartao);
     }
 }

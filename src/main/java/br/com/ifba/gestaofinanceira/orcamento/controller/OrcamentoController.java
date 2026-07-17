@@ -47,4 +47,18 @@ public class OrcamentoController {
         return ResponseEntity.status(HttpStatus.OK).body(sugestao);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Orcamento> atualizar(@PathVariable Long id, @RequestBody Orcamento orcamento) {
+
+        Orcamento orcamentoAtualizado = orcamentoService.atualizar(id, orcamento);
+        return ResponseEntity.ok(orcamentoAtualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        orcamentoService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

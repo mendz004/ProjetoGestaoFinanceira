@@ -10,7 +10,15 @@ import java.util.Map;
 public interface OrcamentoIService {
 
     Orcamento cadastrarOrcamento(OrcamentoPostDto dto);
+
     List<Orcamento> findAll();
+
     Map<CategoriaDespesa, Double> gerarSugestaoOrcamento(Long usuarioId);
+
     void atualizarGasto(Long usuarioId, Integer mes, Integer ano, CategoriaDespesa categoria, Double valorGasto);
+
+    Orcamento atualizar(Long id, Orcamento orcamentoAtualizado);
+
+    void deleteById(Long id);
+
 }

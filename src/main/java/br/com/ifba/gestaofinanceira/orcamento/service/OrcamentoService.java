@@ -111,4 +111,29 @@ public class OrcamentoService implements OrcamentoIService {
             orcamentoRepository.save(orcamento);
         }
     }
+
+    @Transactional
+    @Override
+    public Orcamento atualizar(Long id, Orcamento orcamentoAtualizado) {
+
+        Orcamento orcamentoExistente = orcamentoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Orçamento não encontrado com o ID: " + id));
+
+        orcamentoExistente.setCategoria(orcamentoAtualizado.getCategoria());
+        orcamentoExistente.setValorLimite(orcamentoAtualizado.getValorLimite());
+        orcamentoExistente.setValorGasto(orcamentoAtualizado.getValorGasto());
+        orcamentoExistente.setMes(orcamentoAtualizado.getMes());
+        orcamentoExistente.setAno(orcamentoAtualizado.getAno());
+
+        return orcamentoRepository.save(orcamentoExistente);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+        Orcamento orcamento = orcamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Orçamento não encontrado."));
+
+        orcamentoRepository.delete(orcamento);
+    }
 }

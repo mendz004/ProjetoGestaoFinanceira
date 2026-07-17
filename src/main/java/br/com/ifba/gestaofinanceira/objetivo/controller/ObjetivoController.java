@@ -49,4 +49,17 @@ public class ObjetivoController {
 
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ObjetivoFinanceiro> atualizar(@PathVariable Long id, @RequestBody ObjetivoFinanceiro objetivo) {
+
+        ObjetivoFinanceiro objetivoAtualizado = service.atualizar(id, objetivo);
+        return ResponseEntity.ok(objetivoAtualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
