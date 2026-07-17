@@ -11,4 +11,5 @@ public interface CartaoIService {
 
     List<Cartao> listarTodos();
 
+    void deleteById(Long id);
 }

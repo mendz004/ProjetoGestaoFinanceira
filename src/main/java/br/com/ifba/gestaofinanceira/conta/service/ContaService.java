@@ -4,6 +4,8 @@ import br.com.ifba.gestaofinanceira.conta.dto.ContaPostDto;
 import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import br.com.ifba.gestaofinanceira.conta.repository.ContaRepository;
 import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
+import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
+import br.com.ifba.gestaofinanceira.receita.repository.ReceitaRepository;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +22,12 @@ public class ContaService implements ContaIService{
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private DespesaRepository despesaRepository;
+
+    @Autowired
+    private ReceitaRepository receitaRepository;
 
     @Transactional
     @Override
@@ -41,5 +49,30 @@ public class ContaService implements ContaIService{
         return contaRepository.findAll();
     }
 
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+        //  Busca a conta no banco de dados
+        Conta conta = contaRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Conta não encontrada com o ID: " + id));
 
+        despesaRepository.deleteAllByConta(conta);
+        receitaRepository.deleteAllByConta(conta);
+
+        contaRepository.delete(conta);
+    }
+
+    @Transactional
+    @Override
+    public Conta atualizar(Long id, Conta contaAtualizada) {
+        Conta contaExistente = contaRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Conta não encontrada."));
+
+        // Atualiza apenas os dados permitidos
+        contaExistente.setNomeConta(contaAtualizada.getNomeConta());
+        contaExistente.setTipo(contaAtualizada.getTipo());
+        contaExistente.setSaldoAtual(contaAtualizada.getSaldoAtual());
+
+        return contaRepository.save(contaExistente);
+    }
 }

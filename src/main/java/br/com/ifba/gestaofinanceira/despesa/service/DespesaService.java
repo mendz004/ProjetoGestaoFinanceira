@@ -83,7 +83,7 @@ public class DespesaService implements DespesaIService {
         Integer mesDespesa = despesa.getData().getMonthValue();
         Integer anoDespesa = despesa.getData().getYear();
 
-        orcamentoService.atualizarGasto( usuarioId, mesDespesa, anoDespesa,
+        orcamentoService.atualizarGasto(usuarioId, mesDespesa, anoDespesa,
                 despesa.getCategoria(), despesa.getValor());
 
 
@@ -118,6 +118,56 @@ public class DespesaService implements DespesaIService {
         }
 
         despesaRepository.delete(despesa);
+    }
+
+    @Transactional
+    public Despesa atualizar(Long id, Despesa novaDespesa) {
+        Despesa despesaExistente = despesaRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Despesa não encontrada."));
+
+        //  REVERTE o impacto antigo (Devolve o dinheiro para a conta ou limite para o cartão)
+        if (despesaExistente.getConta() != null && Boolean.TRUE.equals(despesaExistente.getEfetivada())) {
+            Conta contaAntiga = despesaExistente.getConta();
+            contaAntiga.setSaldoAtual(contaAntiga.getSaldoAtual() + despesaExistente.getValor());
+            contaRepository.save(contaAntiga);
+
+        } else if (despesaExistente.getCartao() != null) {
+            Cartao cartaoAntigo = despesaExistente.getCartao();
+            cartaoAntigo.setLimiteDisponivel(cartaoAntigo.getLimiteDisponivel() + despesaExistente.getValor());
+            cartaoRepository.save(cartaoAntigo);
+        }
+
+        //  APLICA o novo impacto (Subtrai o novo valor da conta ou cartão selecionado)
+        if (novaDespesa.getConta() != null) {
+            Conta contaNova = contaRepository.findById(novaDespesa.getConta().getId()).orElseThrow();
+            if (Boolean.TRUE.equals(novaDespesa.getEfetivada())) {
+                contaNova.setSaldoAtual(contaNova.getSaldoAtual() - novaDespesa.getValor());
+                contaRepository.save(contaNova);
+            }
+            despesaExistente.setConta(contaNova);
+            despesaExistente.setCartao(null);
+
+        } else if (novaDespesa.getCartao() != null) {
+            Cartao cartaoNovo = cartaoRepository.findById(novaDespesa.getCartao().getId()).orElseThrow();
+            cartaoNovo.setLimiteDisponivel(cartaoNovo.getLimiteDisponivel() - novaDespesa.getValor());
+            cartaoRepository.save(cartaoNovo);
+            despesaExistente.setCartao(cartaoNovo);
+            despesaExistente.setConta(null);
+        }
+
+        //  Atualiza os dados da despesa
+        despesaExistente.setDescricao(novaDespesa.getDescricao());
+        despesaExistente.setValor(novaDespesa.getValor());
+        despesaExistente.setData(novaDespesa.getData());
+        despesaExistente.setCategoria(novaDespesa.getCategoria());
+        despesaExistente.setConta(novaDespesa.getConta());
+
+        return despesaRepository.save(despesaExistente);
+    }
+
+    @Override
+    public List<Despesa> findByDescricao(String termo) {
+        return despesaRepository.findByDescricaoContainingIgnoreCase(termo);
     }
 
 }

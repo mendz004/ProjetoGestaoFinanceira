@@ -40,5 +40,17 @@ public class ContaController {
                         ContaGetDto.class));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        contaService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Conta> atualizar(@PathVariable Long id, @RequestBody Conta conta) {
+        Conta contaAtualizada = contaService.atualizar(id, conta);
+        return ResponseEntity.ok(contaAtualizada);
+    }
 
 }

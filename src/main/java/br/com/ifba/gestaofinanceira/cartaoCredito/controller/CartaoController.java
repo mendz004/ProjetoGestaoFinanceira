@@ -39,4 +39,12 @@ public class CartaoController {
                         cartaoService.listarTodos(),
                         CartaoGetDto.class));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        cartaoService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

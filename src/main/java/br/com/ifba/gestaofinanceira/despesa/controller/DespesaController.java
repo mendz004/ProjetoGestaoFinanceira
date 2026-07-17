@@ -42,16 +42,29 @@ public class DespesaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-            return ResponseEntity.ok(despesaService.buscarPorId(id));
+        return ResponseEntity.ok(despesaService.buscarPorId(id));
 
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete{id}")
     public ResponseEntity<?> excluirDespesa(@PathVariable Long id) {
 
         despesaService.excluirDespesa(id);
-
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Despesa> atualizar(@PathVariable Long id, @RequestBody Despesa despesa) {
+
+        Despesa despesaAtualizada = despesaService.atualizar(id, despesa);
+        return ResponseEntity.ok(despesaAtualizada);
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Despesa>> buscar(@RequestParam String termo) {
+
+        List<Despesa> despesas = despesaService.findByDescricao(termo);
+        return ResponseEntity.ok(despesas);
     }
 
 }

@@ -15,4 +15,5 @@ public interface DespesaIService {
 
     Despesa buscarPorId(Long id);
 
+    List<Despesa> findByDescricao(String termo);
 }

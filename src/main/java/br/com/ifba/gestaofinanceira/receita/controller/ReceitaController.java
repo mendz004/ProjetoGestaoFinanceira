@@ -38,4 +38,25 @@ public class ReceitaController {
                 (this.receitaService.findAll(),
                         ReceitaGetDto.class));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> excluirDespesa(@PathVariable Long id) {
+
+        receitaService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Receita> atualizar(@PathVariable Long id, @RequestBody Receita receita) {
+
+        Receita receitaAtualizada = receitaService.atualizar(id, receita);
+        return ResponseEntity.ok(receitaAtualizada);
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Receita>> buscar(@RequestParam String termo) {
+
+        List<Receita> receitas = receitaService.findByDescricao(termo);
+        return ResponseEntity.ok(receitas);
+    }
 }

@@ -26,6 +26,7 @@ public class DespesaPostDto {
     private Boolean efetivada;
 
     @JsonProperty(value = "formaPagamento")
+    @NotNull(message = "Forma de Pagamento Obrigatória!")
     private String formaPagamento;
 
     @JsonProperty(value = "contaId")
