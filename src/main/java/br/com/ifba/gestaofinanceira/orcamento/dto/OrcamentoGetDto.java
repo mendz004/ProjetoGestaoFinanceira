@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class OrcamentoGetDto {
 
+    @JsonProperty(value = "id")
+    private Long id;
+
     @JsonProperty(value = "mes")
     private Integer mes;
 

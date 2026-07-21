@@ -23,7 +23,7 @@ public class ObjetivoController {
     @Autowired
     private ObjectMapperUtil objectMapperUtil;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<ObjetivoGetDto> cadastrar(@RequestBody @Valid ObjetivoPostDto dto) {
         ObjetivoFinanceiro novoObjetivo = service.cadastrarObjetivo(dto);
 
@@ -32,7 +32,7 @@ public class ObjetivoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<ObjetivoGetDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(
                 objectMapperUtil.mapAll(service.findAll(), ObjetivoGetDto.class)

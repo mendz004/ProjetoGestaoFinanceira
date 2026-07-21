@@ -6,14 +6,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
+@ToString(exclude = "contas")
 @Data
 @NoArgsConstructor
-public class Usuario extends PersistenceEntity {
+public class Usuario extends PersistenceEntity  {
 
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
@@ -31,5 +33,6 @@ public class Usuario extends PersistenceEntity {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Conta> contas;
+
 
 }

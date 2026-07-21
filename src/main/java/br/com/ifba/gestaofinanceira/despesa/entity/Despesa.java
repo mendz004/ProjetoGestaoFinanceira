@@ -4,6 +4,7 @@ import br.com.ifba.gestaofinanceira.Infraestructure.entity.PersistenceEntity;
 import br.com.ifba.gestaofinanceira.cartaoCredito.entity.Cartao;
 import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class Despesa extends PersistenceEntity {
     private Double valor;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime data;
 
     @Column(length = 255)

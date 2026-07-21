@@ -23,7 +23,7 @@ public class ContaController {
     @Autowired
     private ObjectMapperUtil objectMapperUtil;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<ContaGetDto> cadastrarConta(@RequestBody @Valid ContaPostDto dto) {
 
         Conta novaConta = contaService.cadastrarConta(dto);
@@ -33,7 +33,7 @@ public class ContaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<ContaGetDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(objectMapperUtil.mapAll
                 (this.contaService.findAll(),

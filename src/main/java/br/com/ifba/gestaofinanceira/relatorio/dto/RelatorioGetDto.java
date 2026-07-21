@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class RelatorioGetDto {
 
+    @JsonProperty(value = "id")
+    private Long id;
+
     @JsonProperty(value = "mes")
     private Integer mes;
 

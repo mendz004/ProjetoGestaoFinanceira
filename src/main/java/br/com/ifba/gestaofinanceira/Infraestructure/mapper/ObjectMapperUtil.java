@@ -1,5 +1,7 @@
 package br.com.ifba.gestaofinanceira.Infraestructure.mapper;
 
+import br.com.ifba.gestaofinanceira.conta.entity.Conta;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.config.Configuration;
@@ -14,12 +16,6 @@ public class ObjectMapperUtil {
 
     static {
         MODEL_MAPPER = new ModelMapper();
-    }
-
-    /*Esse metodo fica responsavel por converter um objeto de entrada
-     * em outro tipo de objeto
-     */
-    public <Input, Output> Output map(final Input obect, final Class<Output> clazz) {
 
         MODEL_MAPPER.getConfiguration()
                 .setAmbiguityIgnored(true)
@@ -27,9 +23,20 @@ public class ObjectMapperUtil {
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
 
-        Output c = MODEL_MAPPER.map(obect, clazz);
+        Converter<Conta, String> contaParaString = context -> {
+            Conta conta = context.getSource();
+            return conta == null ? null : conta.getNomeConta();
+        };
 
-        return c;
+        MODEL_MAPPER.addConverter(contaParaString);
+    }
+
+    /*Esse metodo fica responsavel por converter um objeto de entrada
+     * em outro tipo de objeto
+     */
+    public <Input, Output> Output map(final Input obect, final Class<Output> clazz) {
+
+        return MODEL_MAPPER.map(obect, clazz);
     }
 
     /* Metodo responsavel por converter

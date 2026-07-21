@@ -1,6 +1,7 @@
 package br.com.ifba.gestaofinanceira.despesa.dto;
 
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class DespesaPostDto {
 
     @JsonProperty(value = "data")
     @NotNull(message = "data deve ser obrigatoria")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime data;
 
     @JsonProperty(value = "descricao")

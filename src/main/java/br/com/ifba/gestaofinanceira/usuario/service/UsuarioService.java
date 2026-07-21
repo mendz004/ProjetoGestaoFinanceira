@@ -15,6 +15,8 @@ public class UsuarioService implements UsuarioIService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
+
     @Transactional
     @Override
     public Usuario cadastrar(Usuario usuario) {
@@ -22,8 +24,9 @@ public class UsuarioService implements UsuarioIService {
 
         if (emailExistente) {
             throw new RuntimeException("Email já Cadastrado");
-        } else
-            return usuarioRepository.save(usuario);
+        }
+
+        return usuarioRepository.save(usuario);
 
     }
 

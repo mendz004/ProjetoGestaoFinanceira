@@ -24,8 +24,8 @@ public class DespesaController {
     private ObjectMapperUtil objectMapperUtil;
 
 
-    @PostMapping("/registrar")
-    public ResponseEntity<DespesaGetDto> registrarDespesa(@RequestBody @Valid DespesaPostDto despesaPostDto) {
+    @PostMapping
+    public ResponseEntity<DespesaGetDto> registrarDespesa(@Valid @RequestBody DespesaPostDto despesaPostDto) {
 
         Despesa despesa = despesaService.registrarDespesa(despesaPostDto);
 
@@ -33,7 +33,7 @@ public class DespesaController {
                 .body(objectMapperUtil.map(despesa, DespesaGetDto.class));
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<DespesaGetDto>> listarTodas() {
         return ResponseEntity.status(HttpStatus.OK).body(objectMapperUtil.mapAll
                 (this.despesaService.listarTodas(),
@@ -46,7 +46,7 @@ public class DespesaController {
 
     }
 
-    @DeleteMapping("/delete{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> excluirDespesa(@PathVariable Long id) {
 
         despesaService.excluirDespesa(id);

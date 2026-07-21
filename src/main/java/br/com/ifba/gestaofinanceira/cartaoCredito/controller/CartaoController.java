@@ -5,7 +5,6 @@ import br.com.ifba.gestaofinanceira.cartaoCredito.dto.CartaoPostDto;
 import br.com.ifba.gestaofinanceira.cartaoCredito.entity.Cartao;
 import br.com.ifba.gestaofinanceira.cartaoCredito.service.CartaoService;
 import br.com.ifba.gestaofinanceira.Infraestructure.mapper.ObjectMapperUtil;
-import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class CartaoController {
     @Autowired
     private ObjectMapperUtil objectMapperUtil;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<CartaoGetDto> cadastrarCartao(@RequestBody @Valid CartaoPostDto dto) {
 
         Cartao novoCartao = cartaoService.cadastrarCartao(dto);
@@ -33,7 +32,7 @@ public class CartaoController {
                 .body(objectMapperUtil.map(novoCartao, CartaoGetDto.class));
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<CartaoGetDto>> listarTodos() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(objectMapperUtil.mapAll(

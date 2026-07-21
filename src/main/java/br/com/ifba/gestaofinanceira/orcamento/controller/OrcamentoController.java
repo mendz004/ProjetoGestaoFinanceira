@@ -25,7 +25,7 @@ public class OrcamentoController {
     @Autowired
     private ObjectMapperUtil objectMapperUtil;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<OrcamentoGetDto> cadastrar(@RequestBody @Valid OrcamentoPostDto dto) {
         Orcamento novoOrcamento = orcamentoService.cadastrarOrcamento(dto);
 
@@ -34,7 +34,7 @@ public class OrcamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<OrcamentoGetDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(
                 objectMapperUtil.mapAll(orcamentoService.findAll(), OrcamentoGetDto.class)

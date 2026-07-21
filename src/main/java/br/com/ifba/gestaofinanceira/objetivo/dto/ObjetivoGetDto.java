@@ -9,6 +9,10 @@ import java.time.LocalDate;
 @Data
 public class ObjetivoGetDto {
 
+
+    @JsonProperty(value = "id")
+    private Long id;
+
     @JsonProperty(value = "nome")
     private String nome;
 

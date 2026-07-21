@@ -23,7 +23,7 @@ public class ReceitaController {
     @Autowired
     private ObjectMapperUtil objectMapperUtil;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<ReceitaGetDto> cadastrarReceita(@RequestBody @Valid ReceitaPostDto receitaPostDto) {
         Receita novaReceita = receitaService.cadastrarReceita(receitaPostDto);
 
@@ -32,7 +32,7 @@ public class ReceitaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<List<ReceitaGetDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(objectMapperUtil.mapAll
                 (this.receitaService.findAll(),

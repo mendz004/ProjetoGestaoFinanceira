@@ -6,11 +6,13 @@ import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Table(name = "conta")
+@ToString(exclude = "usuario")
 @Data
 @NoArgsConstructor
 public class Conta extends PersistenceEntity {

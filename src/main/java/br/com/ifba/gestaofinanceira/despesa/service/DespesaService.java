@@ -41,6 +41,7 @@ public class DespesaService implements DespesaIService {
         despesa.setDescricao(dto.getDescricao());
         despesa.setCategoria(dto.getCategoria());
         despesa.setFormaPagamento(dto.getFormaPagamento());
+        despesa.setEfetivada(dto.getEfetivada());
 
         Long usuarioId = null;
 
@@ -161,7 +162,6 @@ public class DespesaService implements DespesaIService {
         despesaExistente.setData(novaDespesa.getData());
         despesaExistente.setCategoria(novaDespesa.getCategoria());
         despesaExistente.setConta(novaDespesa.getConta());
-
         return despesaRepository.save(despesaExistente);
     }
 
