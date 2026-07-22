@@ -4,6 +4,7 @@ import br.com.ifba.gestaofinanceira.Infraestructure.entity.PersistenceEntity;
 import br.com.ifba.gestaofinanceira.cartaoCredito.entity.Cartao;
 import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
+import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -40,6 +41,10 @@ public class Despesa extends PersistenceEntity {
     @ManyToOne
     @JoinColumn(name = "contaId")
     private Conta conta;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria", nullable = false)

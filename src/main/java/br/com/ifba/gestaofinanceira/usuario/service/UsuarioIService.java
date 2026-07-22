@@ -6,7 +6,6 @@ public interface UsuarioIService {
 
     Usuario cadastrar(Usuario usuario);
 
-    Usuario login(String email, String senha);
 
     void recuperarSenha(String email, String novaSenha);
 

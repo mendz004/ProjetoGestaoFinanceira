@@ -17,4 +17,6 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
     void deleteAllByConta(Conta conta);
 
     List<Receita> findByDescricaoContainingIgnoreCase(String termo);
+
+    List<Receita> findByUsuarioId(Long usuarioId);
 }

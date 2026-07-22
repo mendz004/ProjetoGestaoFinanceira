@@ -32,16 +32,6 @@ public class UsuarioController {
                 .body(objectMapperUtil.map(usuarioSave, UsuarioGetDto.class));
     }
 
-    // Login Usuario
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioGetDto> login(@RequestBody UsuarioPostDto usuarioPostDto) {
-
-            Usuario usuarioLogado = usuarioService.login(usuarioPostDto.getEmail(), usuarioPostDto.getSenha());
-
-            return ResponseEntity.status(HttpStatus.OK).body(objectMapperUtil.map(usuarioLogado, UsuarioGetDto.class));
-
-    }
-    
 
     // Recuperar senha
     @PutMapping("/recuperar-senha")

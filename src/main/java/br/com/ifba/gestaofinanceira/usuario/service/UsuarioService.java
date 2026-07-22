@@ -5,9 +5,8 @@ import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UsuarioService implements UsuarioIService {
@@ -15,7 +14,8 @@ public class UsuarioService implements UsuarioIService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -23,46 +23,31 @@ public class UsuarioService implements UsuarioIService {
         boolean emailExistente = usuarioRepository.existsByEmail(usuario.getEmail());
 
         if (emailExistente) {
-            throw new RuntimeException("Email já Cadastrado");
+            throw new BusinessException("Email já Cadastrado");
         }
 
-        return usuarioRepository.save(usuario);
+        //  Criptografa a senha antes de salvar no banco!
+        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+        usuario.setSenha(senhaCriptografada);
 
+        return usuarioRepository.save(usuario);
     }
+
 
     @Transactional
     @Override
-    public Usuario login(String email, String senha) {
-
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-
-        if (usuarioOpt.isEmpty()) {
-            throw new BusinessException("E-mail não cadastrado.");
-        }
-
-        Usuario usuario = usuarioOpt.get();
-
-        if (!usuario.getSenha().equals(senha)) {
-            throw new BusinessException("Senha incorreta.");
-        }
-
-        return usuario;
-    }
-
-
-    @Override
     public void recuperarSenha(String email, String novaSenha) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
-        if (usuarioOpt.isEmpty()) {
+        Usuario usuario = (Usuario) usuarioRepository.findByEmail(email);
+
+        if (usuario == null) {
             throw new BusinessException("E-mail não encontrado no sistema.");
         }
 
-        Usuario usuario = usuarioOpt.get();
-
-        usuario.setSenha(novaSenha);
+        //  Criptografa a nova senha antes de atualizar no banco!
+        String senhaCriptografada = passwordEncoder.encode(novaSenha);
+        usuario.setSenha(senhaCriptografada);
 
         usuarioRepository.save(usuario);
     }
-
 }
