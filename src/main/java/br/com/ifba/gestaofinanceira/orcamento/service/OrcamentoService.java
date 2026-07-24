@@ -5,6 +5,7 @@ import br.com.ifba.gestaofinanceira.orcamento.dto.OrcamentoPostDto;
 import br.com.ifba.gestaofinanceira.orcamento.entity.Orcamento;
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
 import br.com.ifba.gestaofinanceira.orcamento.repository.OrcamentoRepository;
+import br.com.ifba.gestaofinanceira.receita.entity.Receita;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -28,12 +29,12 @@ public class OrcamentoService implements OrcamentoIService {
 
     @Transactional
     @Override
-    public Orcamento cadastrarOrcamento(OrcamentoPostDto dto) {
+    public Orcamento cadastrarOrcamento(OrcamentoPostDto dto, Long usuarioId) {
         if (dto.getValorLimite() <= 0) {
             throw new BusinessException("O valor limite do orçamento deve ser maior que zero.");
         }
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
 
         // Evita que o usuário crie dois orçamentos para a mesma categoria no mesmo mês
@@ -53,13 +54,20 @@ public class OrcamentoService implements OrcamentoIService {
 
         orcamento.setValorGasto(0.0);
         orcamento.setUsuario(usuario);
-
+        orcamento.setUsuario(usuario);
         return orcamentoRepository.save(orcamento);
     }
 
     @Override
-    public List<Orcamento> findAll() {
-        return orcamentoRepository.findAll();
+    public List<Orcamento> findAll(Long usuarioId) {
+
+        return orcamentoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public Orcamento findByIdAndUsuario(Long id, Long usuarioId) {
+        return orcamentoRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Orcamento não encontrada ou acesso negado."));
     }
 
     // Gera uma sugestão de limites baseada na regra 50/30/20
@@ -114,10 +122,9 @@ public class OrcamentoService implements OrcamentoIService {
 
     @Transactional
     @Override
-    public Orcamento atualizar(Long id, Orcamento orcamentoAtualizado) {
+    public Orcamento atualizar(Long id, Orcamento orcamentoAtualizado, Long usuarioId) {
 
-        Orcamento orcamentoExistente = orcamentoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Orçamento não encontrado com o ID: " + id));
+        Orcamento orcamentoExistente = findByIdAndUsuario(id, usuarioId);
 
         orcamentoExistente.setCategoria(orcamentoAtualizado.getCategoria());
         orcamentoExistente.setValorLimite(orcamentoAtualizado.getValorLimite());
@@ -130,9 +137,8 @@ public class OrcamentoService implements OrcamentoIService {
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
-        Orcamento orcamento = orcamentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Orçamento não encontrado."));
+    public void deleteById(Long id, Long usuarioId) {
+        Orcamento orcamento = findByIdAndUsuario(id, usuarioId);
 
         orcamentoRepository.delete(orcamento);
     }

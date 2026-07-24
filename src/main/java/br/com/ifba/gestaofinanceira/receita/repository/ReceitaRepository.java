@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReceitaRepository extends JpaRepository<Receita, Long> {
@@ -16,7 +17,9 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
 
     void deleteAllByConta(Conta conta);
 
-    List<Receita> findByDescricaoContainingIgnoreCase(String termo);
+    List<Receita> findByDescricaoContainingIgnoreCaseAndUsuarioId(String termo, Long usuarioId);
 
     List<Receita> findByUsuarioId(Long usuarioId);
+
+    Optional<Receita> findByIdAndUsuarioId(Long id, Long usuarioId);
 }

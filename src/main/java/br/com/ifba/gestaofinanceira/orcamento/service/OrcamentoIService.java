@@ -9,16 +9,18 @@ import java.util.Map;
 
 public interface OrcamentoIService {
 
-    Orcamento cadastrarOrcamento(OrcamentoPostDto dto);
+    Orcamento cadastrarOrcamento(OrcamentoPostDto dto, Long usuarioId);
 
-    List<Orcamento> findAll();
+    List<Orcamento> findAll(Long usuarioId);
 
     Map<CategoriaDespesa, Double> gerarSugestaoOrcamento(Long usuarioId);
 
     void atualizarGasto(Long usuarioId, Integer mes, Integer ano, CategoriaDespesa categoria, Double valorGasto);
 
-    Orcamento atualizar(Long id, Orcamento orcamentoAtualizado);
+    Orcamento atualizar(Long id, Orcamento orcamentoAtualizado, Long usuarioId);
 
-    void deleteById(Long id);
+    void deleteById(Long id, Long usuarioId);
+
+    Orcamento findByIdAndUsuario(Long id, Long usuarioId);
 
 }

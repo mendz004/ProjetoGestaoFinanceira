@@ -5,6 +5,7 @@ import br.com.ifba.gestaofinanceira.objetivo.dto.ObjetivoPostDto;
 import br.com.ifba.gestaofinanceira.objetivo.emum.StatusObjetivo;
 import br.com.ifba.gestaofinanceira.objetivo.entity.ObjetivoFinanceiro;
 import br.com.ifba.gestaofinanceira.objetivo.repository.ObjetivoRepository;
+import br.com.ifba.gestaofinanceira.receita.entity.Receita;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -24,13 +25,13 @@ public class ObjetivoService implements ObjetivoIService {
 
     @Transactional
     @Override
-    public ObjetivoFinanceiro cadastrarObjetivo(ObjetivoPostDto dto) {
+    public ObjetivoFinanceiro cadastrarObjetivo(ObjetivoPostDto dto, Long usuarioId) {
         if (dto.getValorAlvo() <= 0) {
             throw new BusinessException("O valor alvo deve ser maior que zero.");
         }
 
         // Busca o usuário no banco de dados
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
 
         ObjetivoFinanceiro objetivo = new ObjetivoFinanceiro();
@@ -42,24 +43,32 @@ public class ObjetivoService implements ObjetivoIService {
         objetivo.setDataLimite(dto.getDataLimite());
         objetivo.setUsuario(usuario);
 
+        objetivo.setUsuario(usuario);
 
         return objetivoRepository.save(objetivo);
     }
 
     @Override
-    public List<ObjetivoFinanceiro> findAll() {
-        return objetivoRepository.findAll();
+    public List<ObjetivoFinanceiro> findAll(Long usuarioId) {
+
+        return objetivoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public ObjetivoFinanceiro findByIdAndUsuario(Long id, Long usuarioId) {
+
+        return objetivoRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Objetivo não encontrada ou acesso negado."));
     }
 
     @Transactional
     @Override
-    public ObjetivoFinanceiro depositar(Long id, Double valorDepositado) {
+    public ObjetivoFinanceiro depositar(Long id, Double valorDepositado, Long usuarioId) {
         if (valorDepositado <= 0) {
             throw new BusinessException("O valor do depósito deve ser maior que zero.");
         }
 
-        ObjetivoFinanceiro objetivo = objetivoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Objetivo não encontrado."));
+        ObjetivoFinanceiro objetivo = findByIdAndUsuario(id, usuarioId);
 
         // Adiciona o dinheiro no objetivo
         objetivo.setValorAtual(objetivo.getValorAtual() + valorDepositado);
@@ -74,10 +83,9 @@ public class ObjetivoService implements ObjetivoIService {
 
     @Transactional
     @Override
-    public ObjetivoFinanceiro atualizar(Long id, ObjetivoFinanceiro objetivoAtualizado) {
+    public ObjetivoFinanceiro atualizar(Long id, ObjetivoFinanceiro objetivoAtualizado, Long usuarioId) {
 
-        ObjetivoFinanceiro objetivoExistente = objetivoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Objetivo não encontrado com o ID: " + id));
+        ObjetivoFinanceiro objetivoExistente = findByIdAndUsuario(id, usuarioId);
 
         // Atualiza os dados da meta
         objetivoExistente.setNome(objetivoAtualizado.getNome());
@@ -91,10 +99,9 @@ public class ObjetivoService implements ObjetivoIService {
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id, Long usuarioId) {
 
-        ObjetivoFinanceiro objetivo = objetivoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Objetivo não encontrado."));
+        ObjetivoFinanceiro objetivo = findByIdAndUsuario(id, usuarioId);
 
         objetivoRepository.delete(objetivo);
     }

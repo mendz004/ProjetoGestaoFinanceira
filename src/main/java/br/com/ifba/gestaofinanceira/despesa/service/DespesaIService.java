@@ -2,18 +2,19 @@ package br.com.ifba.gestaofinanceira.despesa.service;
 
 import br.com.ifba.gestaofinanceira.despesa.dto.DespesaPostDto;
 import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
+import br.com.ifba.gestaofinanceira.receita.entity.Receita;
 
 import java.util.List;
 
 public interface DespesaIService {
 
-    Despesa registrarDespesa(DespesaPostDto despesaPostDto);
+    Despesa registrarDespesa(DespesaPostDto despesaPostDto, Long usuarioId);
 
-    List<Despesa> listarTodas();
+    List<Despesa> findAll(Long usuarioId);
 
-    void excluirDespesa(Long id);
+    void deleteById(Long id, Long usuarioId);
 
-    Despesa buscarPorId(Long id);
+    List<Despesa> findByDescricao(String termo, Long usuarioId);
 
-    List<Despesa> findByDescricao(String termo);
+    Despesa findByIdAndUsuario(Long id, Long usuarioId);
 }

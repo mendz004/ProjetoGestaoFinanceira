@@ -2,6 +2,7 @@ package br.com.ifba.gestaofinanceira.orcamento.repository;
 
 import br.com.ifba.gestaofinanceira.orcamento.entity.Orcamento;
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
+import br.com.ifba.gestaofinanceira.receita.entity.Receita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,8 @@ public interface OrcamentoRepository extends JpaRepository<Orcamento, Long> {
     );
 
     List<Orcamento> findByUsuarioIdAndMesAndAno(Long usuarioId, Integer mes, Integer ano);
+
+    List<Orcamento> findByUsuarioId(Long usuarioId);
+
+    Optional<Orcamento> findByIdAndUsuarioId(Long id, Long usuarioId);
 }

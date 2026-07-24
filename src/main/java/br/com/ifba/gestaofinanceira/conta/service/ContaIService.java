@@ -7,11 +7,13 @@ import java.util.List;
 
 public interface ContaIService {
 
-    Conta cadastrarConta(ContaPostDto dto);
+    Conta cadastrarConta(ContaPostDto dto, Long usuarioId);
 
-    List<Conta> findAll();
+    List<Conta> findAllByUsuario(Long usuarioId);
 
-    void deleteById(Long id);
+    Conta findByIdAndUsuario(Long id, Long usuarioId);
 
-    Conta atualizar(Long id, Conta contaAtualizada);
+    void deleteById(Long id, Long usuarioId);
+
+    Conta atualizar(Long id, Conta contaAtualizada, Long usuarioId);
 }

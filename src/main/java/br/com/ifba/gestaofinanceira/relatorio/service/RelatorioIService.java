@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RelatorioIService {
 
-    RelatorioMensalDto gerarRelatorioMensal(Long contaId, Integer mes, Integer ano);
-    List<RelatorioMensal> findAll();
+    RelatorioMensalDto gerarRelatorioMensal(Long contaId, Integer mes, Integer ano, Long usuarioId);
 
+    List<RelatorioMensal> findAllByUsuarioId(Long usuarioId);
 }

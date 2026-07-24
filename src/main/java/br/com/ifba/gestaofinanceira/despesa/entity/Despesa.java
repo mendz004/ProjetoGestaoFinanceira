@@ -6,6 +6,8 @@ import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import br.com.ifba.gestaofinanceira.orcamento.enun.CategoriaDespesa;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,6 +36,7 @@ public class Despesa extends PersistenceEntity {
 
     private Boolean efetivada;
 
+    @JsonIgnoreProperties("despesas")
     @ManyToOne
     @JoinColumn(name = "cartaoId")
     private Cartao cartao;
@@ -42,6 +45,7 @@ public class Despesa extends PersistenceEntity {
     @JoinColumn(name = "contaId")
     private Conta conta;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

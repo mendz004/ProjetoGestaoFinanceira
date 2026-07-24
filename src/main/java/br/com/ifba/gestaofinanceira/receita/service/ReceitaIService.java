@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface ReceitaIService {
 
-    Receita cadastrarReceita(ReceitaPostDto dto);
+    Receita cadastrarReceita(ReceitaPostDto dto, Long usuarioId);
 
-    List<Receita> findAll();
+    List<Receita> findAllByUsuario(Long usuarioId);
 
-    void deleteById(Long id);
+    void deleteById(Long id, Long usuarioId);
 
-    Receita findById(Long id);
+    Receita findByIdAndUsuario(Long id, Long usuarioId);
 
-    Receita atualizar(Long id, Receita novaReceita);
+    Receita atualizar(Long id, Receita novaReceita, Long usuarioId);
 
-    List<Receita> findByDescricao(String termo);
+    List<Receita> findByDescricao(String termo, Long usuarioId);
 
 }

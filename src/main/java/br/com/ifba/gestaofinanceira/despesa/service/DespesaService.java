@@ -9,6 +9,8 @@ import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
 import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
 import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import br.com.ifba.gestaofinanceira.orcamento.service.OrcamentoIService;
+import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
+import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,9 +32,16 @@ public class DespesaService implements DespesaIService {
     @Autowired
     private OrcamentoIService orcamentoService;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @Transactional
     @Override
-    public Despesa registrarDespesa(DespesaPostDto dto) {
+    public Despesa registrarDespesa(DespesaPostDto dto, Long usuarioId) {
+
+        // Busca a entidade do usuário no banco
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
 
         Despesa despesa = new Despesa();
 
@@ -43,7 +52,7 @@ public class DespesaService implements DespesaIService {
         despesa.setFormaPagamento(dto.getFormaPagamento());
         despesa.setEfetivada(dto.getEfetivada());
 
-        Long usuarioId = null;
+        despesa.setUsuario(usuario);
 
         if (dto.getContaId() != null) {
 
@@ -76,8 +85,13 @@ public class DespesaService implements DespesaIService {
 
             usuarioId = cartao.getUsuario().getId();
 
+        } else if (dto.getFormaPagamento() != null && dto.getFormaPagamento().toString().equals("DINHEIRO")) {
+
+            despesa.setConta(null);
+            despesa.setCartao(null);
+
         } else {
-            throw new BusinessException("Informe uma conta ou um cartão.");
+            throw new BusinessException("Informe uma conta ou um cartão para esta forma de pagamento.");
         }
 
         // Avisa o Orçamento que o usuário gastou dinheiro
@@ -88,43 +102,46 @@ public class DespesaService implements DespesaIService {
                 despesa.getCategoria(), despesa.getValor());
 
 
+
         return despesaRepository.save(despesa);
     }
 
     @Override
-    public List<Despesa> listarTodas() {
-        return despesaRepository.findAll();
+    public List<Despesa> findAll(Long usuarioId) {
+        return despesaRepository.findByUsuarioId(usuarioId);
     }
 
     @Override
-    public Despesa buscarPorId(Long id) {
-        return despesaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Despesa não encontrada."));
+    public Despesa findByIdAndUsuario(Long id, Long usuarioId) {
+        return despesaRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Despesa não encontrada ou acesso negado."));
     }
 
     @Transactional
     @Override
-    public void excluirDespesa(Long id) {
-        Despesa despesa = buscarPorId(id);
+    public void deleteById(Long id, Long usuarioId) {
 
-        // Devolve o dinheiro para a conta ou limite do cartão antes de apagar
+        Despesa despesa = despesaRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Despesa não encontrada ou não pertence a este usuário."));
+
         if (despesa.getConta() != null && Boolean.TRUE.equals(despesa.getEfetivada())) {
             Conta conta = despesa.getConta();
             conta.setSaldoAtual(conta.getSaldoAtual() + despesa.getValor());
             contaRepository.save(conta);
-        } else if (despesa.getCartao() != null) {
-            Cartao cartao = despesa.getCartao();
-            cartao.setLimiteDisponivel(cartao.getLimiteDisponivel() + despesa.getValor());
-            cartaoRepository.save(cartao);
         }
 
+        // 2. Remove os vínculos para evitar bloqueio de chave estrangeira (Constraint)
+        despesa.setConta(null);
+        despesa.setCartao(null);
+
+        // 3. Exclui a despesa
         despesaRepository.delete(despesa);
     }
 
     @Transactional
-    public Despesa atualizar(Long id, Despesa novaDespesa) {
-        Despesa despesaExistente = despesaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Despesa não encontrada."));
+    public Despesa atualizar(Long id, Despesa novaDespesa, Long usuarioId) {
+
+        Despesa despesaExistente = findByIdAndUsuario(id, usuarioId);
 
         //  REVERTE o impacto antigo (Devolve o dinheiro para a conta ou limite para o cartão)
         if (despesaExistente.getConta() != null && Boolean.TRUE.equals(despesaExistente.getEfetivada())) {
@@ -166,8 +183,8 @@ public class DespesaService implements DespesaIService {
     }
 
     @Override
-    public List<Despesa> findByDescricao(String termo) {
-        return despesaRepository.findByDescricaoContainingIgnoreCase(termo);
+    public List<Despesa> findByDescricao(String termo, Long usuarioId) {
+        return despesaRepository.findByDescricaoContainingIgnoreCaseAndUsuarioId(termo, usuarioId);
     }
 
 }

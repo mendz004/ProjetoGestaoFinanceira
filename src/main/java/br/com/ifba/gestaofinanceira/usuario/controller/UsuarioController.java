@@ -23,7 +23,7 @@ public class UsuarioController {
     private ObjectMapperUtil objectMapperUtil;
 
     // Cadastrar Usuario
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<UsuarioGetDto> cadastrar(@RequestBody @Valid UsuarioPostDto usuarioPostDto) {
         Usuario usuarioSave = usuarioService.cadastrar(
                 objectMapperUtil.map(usuarioPostDto, Usuario.class));

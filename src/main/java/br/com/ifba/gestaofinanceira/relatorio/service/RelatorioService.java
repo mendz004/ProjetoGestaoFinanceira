@@ -1,5 +1,8 @@
 package br.com.ifba.gestaofinanceira.relatorio.service;
 
+import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
+import br.com.ifba.gestaofinanceira.conta.entity.Conta;
+import br.com.ifba.gestaofinanceira.conta.repository.ContaRepository;
 import br.com.ifba.gestaofinanceira.despesa.entity.Despesa;
 import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
 import br.com.ifba.gestaofinanceira.receita.entity.Receita;
@@ -30,16 +33,23 @@ public class RelatorioService implements RelatorioIService {
     @Autowired
     private RelatorioRepository relatorioRepository;
 
+    @Autowired
+    private ContaRepository contaRepository; // 1. Injetamos o repositório de contas para validar a permissão
+
     @Transactional
     @Override
-    public RelatorioMensalDto gerarRelatorioMensal(Long contaId, Integer mes, Integer ano) {
+    public RelatorioMensalDto gerarRelatorioMensal(Long contaId, Integer mes, Integer ano, Long usuarioId) { // 2. Recebe o usuarioId
 
-        //  Define o primeiro e o último dia do mês para a busca no banco
+        // 3. SEGURANÇA: Valida se a conta informada pertence mesmo ao usuário logado
+        Conta conta = contaRepository.findByIdAndUsuarioId(contaId, usuarioId)
+                .orElseThrow(() -> new BusinessException("Conta não encontrada ou não pertence a este usuário."));
+
+        // Define o primeiro e o último dia do mês para a busca no banco
         YearMonth anoMes = YearMonth.of(ano, mes);
         LocalDateTime dataInicio = anoMes.atDay(1).atStartOfDay(); // Ex: 01/07/2026 00:00:00
         LocalDateTime dataFim = anoMes.atEndOfMonth().atTime(23, 59, 59); // Ex: 31/07/2026 23:59:59
 
-        //  Busca Despesas e Receitas daquela conta naquele período
+        // Busca Despesas e Receitas daquela conta naquele período
         List<Despesa> despesas = despesaRepository.findByContaIdAndDataBetween(contaId, dataInicio, dataFim);
         List<Receita> receitas = receitaRepository.findByContaIdAndDataBetween(contaId, dataInicio, dataFim);
 
@@ -63,7 +73,7 @@ public class RelatorioService implements RelatorioIService {
 
         itensExtrato.sort(Comparator.comparing(ExtratoItemDto::getData).reversed());
 
-        //  Monta o relatório final e devolve
+        // Monta o relatório final e devolve
         RelatorioMensalDto relatorio = new RelatorioMensalDto();
         relatorio.setTotalDespesas(totalDespesas);
         relatorio.setTotalReceitas(totalReceitas);
@@ -73,12 +83,8 @@ public class RelatorioService implements RelatorioIService {
         return relatorio;
     }
 
-
     @Override
-    public List<RelatorioMensal> findAll() {
-        return relatorioRepository.findAll();
+    public List<RelatorioMensal> findAllByUsuarioId(Long usuarioId) { // 4. Alterado para buscar apenas do usuário logado
+        return relatorioRepository.findByUsuarioId(usuarioId);
     }
 }
-
-
-

@@ -5,6 +5,7 @@ import br.com.ifba.gestaofinanceira.conta.entity.Conta;
 import br.com.ifba.gestaofinanceira.conta.repository.ContaRepository;
 import br.com.ifba.gestaofinanceira.Infraestructure.exception.BusinessException;
 import br.com.ifba.gestaofinanceira.despesa.repository.DespesaRepository;
+import br.com.ifba.gestaofinanceira.receita.entity.Receita;
 import br.com.ifba.gestaofinanceira.receita.repository.ReceitaRepository;
 import br.com.ifba.gestaofinanceira.usuario.entity.Usuario;
 import br.com.ifba.gestaofinanceira.usuario.repository.UsuarioRepository;
@@ -31,9 +32,9 @@ public class ContaService implements ContaIService{
 
     @Transactional
     @Override
-    public Conta cadastrarConta(ContaPostDto dto) {
+    public Conta cadastrarConta(ContaPostDto dto, Long usuarioId) {
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         Conta conta = new Conta();
@@ -42,19 +43,28 @@ public class ContaService implements ContaIService{
         conta.setTipo(dto.getTipo());
         conta.setUsuario(usuario);
 
+        conta.setUsuario(usuario);
+
         return contaRepository.save(conta);
     }
 
-    public List<Conta> findAll() {
-        return contaRepository.findAll();
+    @Override
+    public List<Conta> findAllByUsuario(Long usuarioId) {
+        return contaRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public Conta findByIdAndUsuario(Long id, Long usuarioId) {
+        return contaRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Conta não encontrada ou acesso negado."));
     }
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
-        //  Busca a conta no banco de dados
-        Conta conta = contaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Conta não encontrada com o ID: " + id));
+    public void deleteById(Long id, Long usuarioId) {
+
+        Conta conta = contaRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new BusinessException("Conta não encontrada ou você não tem permissão para excluí-la."));
 
         despesaRepository.deleteAllByConta(conta);
         receitaRepository.deleteAllByConta(conta);
@@ -64,8 +74,9 @@ public class ContaService implements ContaIService{
 
     @Transactional
     @Override
-    public Conta atualizar(Long id, Conta contaAtualizada) {
-        Conta contaExistente = contaRepository.findById(id)
+    public Conta atualizar(Long id, Conta contaAtualizada, Long usuarioId) {
+
+        Conta contaExistente = contaRepository.findByIdAndUsuarioId(id, usuarioId)
                 .orElseThrow(() -> new BusinessException("Conta não encontrada."));
 
         // Atualiza apenas os dados permitidos
